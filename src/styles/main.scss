@@ -1,0 +1,122 @@
+@import 'normalize.css';
+@import './variables.scss';
+@import './mixins.scss';
+@import './reset.scss';
+
+// 全局样式
+:root {
+  // 颜色变量
+  --color-background: #ffffff;
+  --color-background-soft: #f8f8f8;
+  --color-background-mute: #f2f2f2;
+  --color-border: #{$border-color-light};
+  --color-border-hover: #{$border-color-base};
+  --color-heading: #{$text-primary};
+  --color-text: #{$text-regular};
+}
+
+// 暗色模式
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #181818;
+    --color-background-soft: #222222;
+    --color-background-mute: #282828;
+    --color-border: #{$border-color-base};
+    --color-border-hover: #{$border-color-light};
+    --color-heading: #ffffff;
+    --color-text: rgba(235, 235, 235, 0.64);
+  }
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+  transition: color 0.5s, background-color 0.5s;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: $spacing-large;
+}
+
+// 容器
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-base;
+}
+
+// 通用工具类
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.flex-center {
+  @include flex(row, center, center);
+}
+
+.flex-between {
+  @include flex(row, space-between, center);
+}
+
+.flex-column {
+  @include flex(column, flex-start, stretch);
+}
+
+// 链接样式
+a {
+  text-decoration: none;
+  color: $primary-color;
+  transition: 0.3s;
+
+  &:hover {
+    color: lighten($primary-color, 10%);
+  }
+}
+
+// 响应式工具类
+@include respond-to(sm) {
+  .hidden-sm {
+    display: none !important;
+  }
+
+  #app {
+    padding: $spacing-base;
+  }
+}
+
+@include respond-to(md) {
+  .hidden-md {
+    display: none !important;
+  }
+}
+
+@include respond-to(lg) {
+  .hidden-lg {
+    display: none !important;
+  }
+
+  body {
+    display: flex;
+    place-items: center;
+  }
+
+  #app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 $spacing-large;
+  }
+}
