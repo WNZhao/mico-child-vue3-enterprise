@@ -1,5 +1,6 @@
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { RequestError, ResponseData } from './config'
+import type { AxiosInstance, AxiosResponse } from 'axios'
+import type { ResponseData } from './config'
+import { RequestError } from './config'
 
 // 请求拦截器
 export function setupRequestInterceptors(instance: AxiosInstance) {
@@ -21,12 +22,12 @@ export function setupRequestInterceptors(instance: AxiosInstance) {
 // 响应拦截器
 export function setupResponseInterceptors(instance: AxiosInstance) {
   instance.interceptors.response.use(
-    (response: AxiosResponse<ResponseData>) => {
+    <T>(response: AxiosResponse<ResponseData<T>>) => {
       const { data } = response
 
       // 根据后端约定的状态码判断请求是否成功
       if (data.code === 0) {
-        return data.data
+        return response
       }
 
       // 处理业务错误
@@ -52,7 +53,7 @@ export function setupResponseInterceptors(instance: AxiosInstance) {
             // 服务器错误
             throw new RequestError('服务器错误', 500, null)
           default:
-            throw new RequestError(data.message || '请求失败', status, data)
+            throw new RequestError(data?.message || '请求失败', status, data || null)
         }
       }
 

@@ -1,11 +1,7 @@
 import type { AxiosRequestConfig } from 'axios'
 
-// 环境变量
-const env = import.meta.env
-
 // 请求配置
 export const config: AxiosRequestConfig = {
-  baseURL: env.VITE_API_BASE_URL || '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -13,7 +9,7 @@ export const config: AxiosRequestConfig = {
 }
 
 // 响应数据结构
-export interface ResponseData<T = any> {
+export interface ResponseData<T = unknown> {
   code: number
   data: T
   message: string
@@ -22,10 +18,11 @@ export interface ResponseData<T = any> {
 // 请求错误
 export class RequestError extends Error {
   code: number
-  data: any
+  data: unknown
 
-  constructor(message: string, code: number, data: any) {
+  constructor(message: string, code: number, data: unknown) {
     super(message)
+    this.name = 'RequestError'
     this.code = code
     this.data = data
   }
