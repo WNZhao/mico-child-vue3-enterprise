@@ -2,7 +2,7 @@
  * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2025-04-17 14:57:45
  * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2025-04-17 20:05:50
+ * @LastEditTime: 2025-04-17 21:08:51
  * @FilePath: /micro-child-vue3-enterprise/src/views/findEnterprise.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -116,60 +116,69 @@
     <div class="main-content">
       <!-- 左侧企业列表 -->
       <div class="enterprise-list">
-        <el-card
-          v-loading="loading"
-          class="enterprise-card"
-          v-for="item in enterpriseList"
-          :key="item.id"
-        >
-          <div class="enterprise-content">
-            <div class="enterprise-logo">
-              <el-image
-                :src="item.logo"
-                fit="contain"
-                :error-src="'/src/assets/images/default_company.png'"
-              />
-            </div>
-            <div class="enterprise-info">
-              <h3 class="enterprise-name">{{ item.name }}</h3>
-              <div class="enterprise-meta">
-                <span>{{ item.industry }}</span>
-                <span>{{ item.scale }}</span>
-                <span>{{ item.address }}</span>
+        <template v-if="!loading">
+          <el-card class="enterprise-card" v-for="item in enterpriseList" :key="item.id">
+            <div class="enterprise-content">
+              <div class="enterprise-logo">
+                <el-image
+                  :src="item.logo"
+                  fit="contain"
+                  :error-src="'/src/assets/images/default_company.png'"
+                />
               </div>
-              <div class="enterprise-tags">
-                <el-tag
-                  v-for="(tag, index) in item.welfare"
-                  :key="index"
-                  size="small"
-                  class="welfare-tag"
-                >
-                  {{ tag }}
-                </el-tag>
+              <div class="enterprise-info">
+                <h3 class="enterprise-name">{{ item.name }}</h3>
+                <div class="enterprise-meta">
+                  <span>{{ item.industry }}</span>
+                  <span>{{ item.scale }}</span>
+                  <span>{{ item.address }}</span>
+                </div>
+                <div class="enterprise-tags">
+                  <el-tag
+                    v-for="(tag, index) in item.welfare"
+                    :key="index"
+                    size="small"
+                    class="welfare-tag"
+                    type="info"
+                    effect="plain"
+                  >
+                    {{ tag }}
+                  </el-tag>
+                </div>
+              </div>
+              <div class="enterprise-jobs" v-if="item.hotJob">
+                <div class="hot-job">
+                  <el-tag type="danger" size="small" effect="plain" class="hot-tag">
+                    <el-icon><StarFilled /></el-icon>
+                    热招
+                  </el-tag>
+                  <span class="job-name">{{ item.hotJob.title }}</span>
+                  <span class="job-salary">{{ item.hotJob.salary }}</span>
+                </div>
               </div>
             </div>
-            <div class="enterprise-jobs" v-if="item.hotJob">
-              <div class="hot-job">
-                <span class="job-name">{{ item.hotJob.name }}</span>
-                <span class="job-salary">{{ item.hotJob.salary }}</span>
-              </div>
-            </div>
+          </el-card>
+
+          <el-empty v-if="enterpriseList.length === 0" description="暂无企业数据" />
+
+          <!-- 分页 -->
+          <div class="pagination" v-if="enterpriseList.length > 0">
+            <el-pagination
+              v-model:current-page="pagination.current"
+              v-model:page-size="pagination.pageSize"
+              :total="pagination.total"
+              :page-sizes="[10, 20, 30, 50]"
+              layout="total, sizes, prev, pager, next, jumper"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+            />
           </div>
-        </el-card>
+        </template>
 
-        <el-empty v-if="!loading && enterpriseList.length === 0" description="暂无企业数据" />
-
-        <!-- 分页 -->
-        <div class="pagination" v-if="!loading && enterpriseList.length > 0">
-          <el-pagination
-            v-model:current-page="pagination.current"
-            v-model:page-size="pagination.pageSize"
-            :total="pagination.total"
-            :page-sizes="[10, 20, 30, 50]"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
+        <div v-else class="loading-container">
+          <el-skeleton :rows="3" animated />
+          <el-skeleton :rows="3" animated />
+          <el-skeleton :rows="3" animated />
         </div>
       </div>
 
@@ -181,16 +190,35 @@
               <span>推荐企业</span>
             </div>
           </template>
-          <div class="recommend-list">
-            <div v-for="item in recommendedList" :key="item.id" class="recommend-item">
-              <el-image
-                :src="item.logo"
-                fit="contain"
-                :error-src="'/src/assets/images/default_company.png'"
-              />
-              <span class="company-name">{{ item.name }}</span>
-            </div>
-            <el-empty v-if="!loading && recommendedList.length === 0" description="暂无推荐企业" />
+          <div class="recommend-list" v-loading="recommendLoading">
+            <template v-if="!recommendLoading">
+              <div v-for="item in recommendedList" :key="item.id" class="recommend-item">
+                <el-image
+                  :src="item.logo"
+                  fit="contain"
+                  :error-src="'/src/assets/images/default_company.png'"
+                />
+                <div class="recommend-info">
+                  <span class="company-name">{{ item.name }}</span>
+                  <div class="company-meta">
+                    <span>{{ item.industry }}</span>
+                    <span>{{ item.scale }}</span>
+                  </div>
+                  <div class="company-welfare">
+                    <el-tag
+                      v-for="(tag, index) in item.welfare"
+                      :key="index"
+                      size="small"
+                      type="info"
+                      effect="plain"
+                    >
+                      {{ tag }}
+                    </el-tag>
+                  </div>
+                </div>
+              </div>
+              <el-empty v-if="recommendedList.length === 0" description="暂无推荐企业" />
+            </template>
           </div>
         </el-card>
       </div>
@@ -201,8 +229,29 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getEnterpriseList } from '@/api/enterprise'
+import { StarFilled } from '@element-plus/icons-vue'
+import { getEnterpriseList, getRecommendEnterprises } from '@/api/enterprise'
 import { getProvinces, getCities } from '@/api/area'
+
+// 类型定义
+interface Enterprise {
+  id: string
+  name: string
+  logo?: string
+  address: string
+  industry: string
+  scale: string
+  welfare: string[]
+  hotJob?: {
+    title: string
+    salary: string
+  }
+}
+
+interface Area {
+  value: string
+  label: string
+}
 
 // 搜索参数
 const searchParams = reactive({
@@ -217,8 +266,9 @@ const searchParams = reactive({
 
 // 状态管理
 const loading = ref(false)
-const enterpriseList = ref([])
-const recommendedList = ref([])
+const recommendLoading = ref(false)
+const enterpriseList = ref<Enterprise[]>([])
+const recommendedList = ref<Enterprise[]>([])
 const pagination = reactive({
   current: 1,
   pageSize: 10,
@@ -226,8 +276,8 @@ const pagination = reactive({
 })
 
 // 省份和城市管理
-const provinces = ref<any[]>([])
-const cities = ref<any[]>([])
+const provinces = ref<Area[]>([])
+const cities = ref<Area[]>([])
 const selectedProvince = ref('')
 const selectedCity = ref('')
 const showAll = ref(false)
@@ -275,32 +325,51 @@ const welfares = [
   '年终奖',
 ]
 
+// 加载推荐企业数据
+const loadRecommendedEnterprises = async () => {
+  recommendLoading.value = true
+  try {
+    const res = await getRecommendEnterprises()
+    if (res.code === 0) {
+      recommendedList.value = res.data || []
+    } else {
+      ElMessage.error(res.msg || '加载推荐企业失败')
+      recommendedList.value = []
+    }
+  } catch (error) {
+    console.error('加载推荐企业失败:', error)
+    ElMessage.error('加载推荐企业失败')
+    recommendedList.value = []
+  } finally {
+    recommendLoading.value = false
+  }
+}
+
 // 加载企业列表数据
 const loadEnterpriseList = async () => {
   loading.value = true
   try {
-    const res = await getEnterpriseList(searchParams)
-    if (res.code === 0) {
-      enterpriseList.value = res.data.list
-      pagination.total = res.data.total
-      // 这里可以添加推荐企业的加载逻辑
-      recommendedList.value = res.data.list.slice(0, 3) // 示例：取前3个作为推荐
+    const res = await getEnterpriseList({
+      ...searchParams,
+      page: pagination.current,
+      pageSize: pagination.pageSize,
+    })
+    if (res.code === 0 && res.data) {
+      enterpriseList.value = res.data.list || []
+      pagination.total = res.data.total || 0
     } else {
       ElMessage.error(res.msg || '加载企业列表失败')
+      enterpriseList.value = []
+      pagination.total = 0
     }
   } catch (error) {
     console.error('加载企业列表失败:', error)
     ElMessage.error('加载企业列表失败')
+    enterpriseList.value = []
+    pagination.total = 0
   } finally {
     loading.value = false
   }
-}
-
-// 处理搜索
-const handleSearch = () => {
-  pagination.current = 1
-  searchParams.page = 1
-  loadEnterpriseList()
 }
 
 // 加载省份数据
@@ -326,7 +395,7 @@ const loadCities = async (provinceCode: string) => {
 }
 
 // 处理省份点击
-const handleProvinceClick = async (province: any) => {
+const handleProvinceClick = async (province: Area | null) => {
   if (!province) {
     // 点击全部
     selectedProvince.value = ''
@@ -367,7 +436,7 @@ const handleProvinceClick = async (province: any) => {
 }
 
 // 处理城市点击
-const handleCityClick = (city: any) => {
+const handleCityClick = (city: Area | null) => {
   if (!city) {
     // 点击全部
     selectedCity.value = ''
@@ -401,14 +470,19 @@ const handleWelfareClick = (welfare: string) => {
 // 处理分页大小变更
 const handleSizeChange = (val: number) => {
   pagination.pageSize = val
-  searchParams.pageSize = val
+  pagination.current = 1 // 切换每页数量时重置为第一页
   loadEnterpriseList()
 }
 
 // 处理页码变更
 const handleCurrentChange = (val: number) => {
   pagination.current = val
-  searchParams.page = val
+  loadEnterpriseList()
+}
+
+// 处理搜索
+const handleSearch = () => {
+  pagination.current = 1 // 搜索时重置为第一页
   loadEnterpriseList()
 }
 
@@ -416,6 +490,7 @@ const handleCurrentChange = (val: number) => {
 onMounted(() => {
   loadProvinces()
   loadEnterpriseList()
+  loadRecommendedEnterprises()
 })
 </script>
 
@@ -551,34 +626,41 @@ onMounted(() => {
           gap: 20px;
 
           .enterprise-logo {
-            width: 120px;
-            height: 120px;
+            width: 80px;
+            height: 80px;
             border: 1px solid #eee;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
 
             .el-image {
-              max-width: 100%;
-              max-height: 100%;
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
             }
           }
 
           .enterprise-info {
             flex: 1;
+            min-width: 0;
 
             .enterprise-name {
-              font-size: 18px;
+              font-size: 16px;
+              font-weight: 500;
               color: #303133;
-              margin-bottom: 10px;
+              margin: 0 0 8px;
             }
 
             .enterprise-meta {
               color: #909399;
-              margin-bottom: 10px;
+              font-size: 13px;
+              margin-bottom: 12px;
 
               span {
                 margin-right: 15px;
+                display: inline-block;
 
                 &:last-child {
                   margin-right: 0;
@@ -592,9 +674,7 @@ onMounted(() => {
               gap: 8px;
 
               .welfare-tag {
-                background-color: var(--el-color-primary-light-9);
-                border-color: var(--el-color-primary-light-8);
-                color: var(--el-color-primary);
+                font-size: 12px;
               }
             }
           }
@@ -603,20 +683,32 @@ onMounted(() => {
             min-width: 200px;
             border-left: 1px solid #eee;
             padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
 
             .hot-job {
               display: flex;
               flex-direction: column;
-              gap: 5px;
+              gap: 8px;
+
+              .hot-tag {
+                width: fit-content;
+                .el-icon {
+                  margin-right: 4px;
+                }
+              }
 
               .job-name {
                 color: #303133;
                 font-weight: 500;
+                font-size: 14px;
               }
 
               .job-salary {
                 color: #f56c6c;
                 font-weight: 500;
+                font-size: 14px;
               }
             }
           }
@@ -638,24 +730,61 @@ onMounted(() => {
         .recommend-list {
           .recommend-item {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
 
             &:last-child {
-              margin-bottom: 0;
+              border-bottom: none;
+              padding-bottom: 0;
+            }
+
+            &:first-child {
+              padding-top: 0;
             }
 
             .el-image {
-              width: 60px;
-              height: 60px;
-              border: 1px solid #eee;
+              width: 48px;
+              height: 48px;
+              border-radius: 4px;
+              flex-shrink: 0;
             }
 
-            .company-name {
+            .recommend-info {
               flex: 1;
-              font-size: 14px;
-              color: #303133;
+              min-width: 0;
+
+              .company-name {
+                font-size: 14px;
+                font-weight: 500;
+                color: #303133;
+                margin-bottom: 4px;
+                display: block;
+              }
+
+              .company-meta {
+                font-size: 12px;
+                color: #909399;
+                margin-bottom: 8px;
+
+                span {
+                  margin-right: 8px;
+
+                  &:last-child {
+                    margin-right: 0;
+                  }
+                }
+              }
+
+              .company-welfare {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+
+                .el-tag {
+                  font-size: 12px;
+                }
+              }
             }
           }
         }
@@ -668,6 +797,12 @@ onMounted(() => {
     justify-content: center;
     margin-top: 30px;
     padding-bottom: 30px;
+  }
+
+  .loading-container {
+    .el-skeleton {
+      margin-bottom: 20px;
+    }
   }
 }
 </style>
