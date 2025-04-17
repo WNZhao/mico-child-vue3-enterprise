@@ -11,21 +11,22 @@ setupRequestInterceptors(instance)
 setupResponseInterceptors(instance)
 
 // 请求方法
-export async function request<T = any>(config: AxiosRequestConfig): Promise<T> {
+export async function request<T>(config: AxiosRequestConfig): Promise<T> {
   try {
-    return await instance.request(config)
+    const response = await instance.request<T>(config)
+    return response.data
   } catch (error) {
     throw error
   }
 }
 
 // GET请求
-export function get<T = any>(
+export function get<T>(
   url: string,
-  params?: any,
+  params?: Record<string, unknown>,
   config: AxiosRequestConfig = {},
 ): Promise<T> {
-  return request({
+  return request<T>({
     method: 'get',
     url,
     params,
@@ -34,12 +35,12 @@ export function get<T = any>(
 }
 
 // POST请求
-export function post<T = any>(
+export function post<T>(
   url: string,
-  data?: any,
+  data?: Record<string, unknown>,
   config: AxiosRequestConfig = {},
 ): Promise<T> {
-  return request({
+  return request<T>({
     method: 'post',
     url,
     data,
@@ -48,8 +49,12 @@ export function post<T = any>(
 }
 
 // PUT请求
-export function put<T = any>(url: string, data?: any, config: AxiosRequestConfig = {}): Promise<T> {
-  return request({
+export function put<T>(
+  url: string,
+  data?: Record<string, unknown>,
+  config: AxiosRequestConfig = {},
+): Promise<T> {
+  return request<T>({
     method: 'put',
     url,
     data,
@@ -58,12 +63,12 @@ export function put<T = any>(url: string, data?: any, config: AxiosRequestConfig
 }
 
 // DELETE请求
-export function del<T = any>(
+export function del<T>(
   url: string,
-  params?: any,
+  params?: Record<string, unknown>,
   config: AxiosRequestConfig = {},
 ): Promise<T> {
-  return request({
+  return request<T>({
     method: 'delete',
     url,
     params,
