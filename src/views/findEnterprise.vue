@@ -2,7 +2,7 @@
  * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2025-04-17 14:57:45
  * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2025-04-17 21:08:51
+ * @LastEditTime: 2025-04-18 10:25:35
  * @FilePath: /micro-child-vue3-enterprise/src/views/findEnterprise.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -117,7 +117,12 @@
       <!-- 左侧企业列表 -->
       <div class="enterprise-list">
         <template v-if="!loading">
-          <el-card class="enterprise-card" v-for="item in enterpriseList" :key="item.id">
+          <el-card
+            class="enterprise-card"
+            v-for="item in enterpriseList"
+            :key="item.id"
+            @click="goToEnterpriseDetail(item.id)"
+          >
             <div class="enterprise-content">
               <div class="enterprise-logo">
                 <el-image
@@ -228,10 +233,14 @@
 
 <script lang="ts" setup>
 import { ref, reactive, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { StarFilled } from '@element-plus/icons-vue'
 import { getEnterpriseList, getRecommendEnterprises } from '@/api/enterprise'
 import { getProvinces, getCities } from '@/api/area'
+
+// 获取路由实例
+const router = useRouter()
 
 // 类型定义
 interface Enterprise {
@@ -486,6 +495,11 @@ const handleSearch = () => {
   loadEnterpriseList()
 }
 
+// 跳转到企业详情
+const goToEnterpriseDetail = (id: string) => {
+  router.push(`/enterprise/detail/${id}`)
+}
+
 // 组件挂载时加载数据
 onMounted(() => {
   loadProvinces()
@@ -620,6 +634,13 @@ onMounted(() => {
 
       .enterprise-card {
         margin-bottom: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
         .enterprise-content {
           display: flex;

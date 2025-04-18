@@ -2,7 +2,7 @@
  * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2025-04-17 15:19:47
  * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2025-04-17 21:10:55
+ * @LastEditTime: 2025-04-18 11:21:09
  * @FilePath: /micro-child-vue3-enterprise/src/api/enterprise.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -70,7 +70,7 @@ export function getEnterpriseList(params: EnterpriseListParams) {
 
 // 获取企业详情
 export function getEnterpriseDetail(id: string) {
-  return get<EnterpriseInfo>(`/api/enterprise/${id}`)
+  return get<EnterpriseInfo>(`/api/recruit/job/getEnterpriseDetail?id=${id}`)
 }
 
 // 创建企业
