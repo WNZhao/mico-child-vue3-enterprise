@@ -2,7 +2,7 @@
  * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2025-04-17 14:57:45
  * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2025-04-17 21:30:43
+ * @LastEditTime: 2025-04-18 11:27:52
  * @FilePath: /micro-child-vue3-enterprise/src/views/enterpriseDetail.vue
  * @Description: 企业详情页面
 -->
@@ -167,16 +167,16 @@ onMounted(() => {
 .enterprise-detail {
   min-height: 100vh;
   background-color: #f5f7fa;
-  padding: 20px;
 
   .enterprise-header {
-    background-color: #fff;
-    padding: 24px;
+    background-color: #2c4b5e;
+    padding: 24px 0;
     margin-bottom: 20px;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
     .enterprise-info {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
       display: flex;
       gap: 24px;
       align-items: center;
@@ -186,6 +186,7 @@ onMounted(() => {
         height: 120px;
         border-radius: 4px;
         border: 1px solid #eee;
+        background-color: #fff;
       }
 
       .info-content {
@@ -194,12 +195,12 @@ onMounted(() => {
         .company-name {
           font-size: 24px;
           font-weight: 600;
-          color: #303133;
+          color: #fff;
           margin: 0 0 12px;
         }
 
         .company-meta {
-          color: #606266;
+          color: rgba(255, 255, 255, 0.8);
           margin-bottom: 12px;
 
           span {
@@ -215,12 +216,21 @@ onMounted(() => {
           display: flex;
           flex-wrap: wrap;
           gap: 8px;
+
+          .welfare-tag {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+          }
         }
       }
     }
   }
 
   .detail-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
     display: flex;
     gap: 20px;
 
